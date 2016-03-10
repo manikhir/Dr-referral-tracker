@@ -6,7 +6,7 @@
       Add Organization</a>
       <center><h2><strong>Create Practitioner</strong></h2></center>
 
-      <form id="form-physician" method="POST" class="form-horizontal" action=".">
+      <form id="form-agent" method="POST" class="form-horizontal" action=".">
           {% csrf_token %}
 
           {% for field in form.visible_fields %}
@@ -41,7 +41,7 @@ $(document).ready(function () {
   $("input[type='email']").addClass('form-control')
   $("#id_organization-wrapper input").css("width", "464px");
 
-  $("#id_physician_name").addClass("capital");
+  $("#id_agent_name").addClass("capital");
 
 });
 </script>

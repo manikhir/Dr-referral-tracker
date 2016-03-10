@@ -3,9 +3,9 @@
 {% block content %}
 <div class="form col-sm-offset-2 col-sm-8">
 
-    <center><h2><strong>Record Referral</strong></h2></center>
+    <center><h2><strong>Record Patient Visit</strong></h2></center>
 
-      <form id="form-referral" method="POST" class="form-horizontal" action=".">
+      <form id="form-patient_visit" method="POST" class="form-horizontal" action=".">
       {% csrf_token %}
 
       {% for field in form.visible_fields %}
@@ -37,7 +37,7 @@
 
       <div class="form-group">
           <div class="col-sm-offset-2 col-sm-6">
-            <button type="submit" class="btn btn-primary btn-lg">submit</button>
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
           </div>
       </div>
 
@@ -63,7 +63,7 @@
 
     $("input[type='text']").addClass('form-control')
     $("input[type='number']").addClass('form-control')
-    $("#id_physician-wrapper input").css("width", "464px");
+    $("#id_agent-wrapper input").css("width", "464px");
 });
         </script>
   {% endblock %}

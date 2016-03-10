@@ -7,7 +7,7 @@ from celery.schedules import crontab
 from django.db.models import Sum
 from Practice_Referral import settings
 from django.template.loader import render_to_string
-from tracking.models import Physician, ThankyouMails, EmailReport, LAST_MONTH, LAST_12_MONTH
+from tracking.models import Agent, ThankyouMails, EmailReport, LAST_MONTH, LAST_12_MONTH
 
 @periodic_task(run_every=crontab(minute=0, hour=0))
 def thankyou_insertion_cron():
@@ -19,24 +19,24 @@ def thankyou_insertion_cron():
     print ('Thankyou-cron')
     today_date = date.today()
 
-    year_count = Physician.objects.filter(Referral__visit_date__range=[LAST_12_MONTH,LAST_MONTH]).annotate(
-        total_visits=Sum('Referral__visit_count')).order_by('-total_visits')
-    month_count = Physician.objects.filter(Referral__visit_date__month=today_date.month-1,
-        Referral__visit_date__year=today_date.year).annotate(
-        total_visits=Sum('Referral__visit_count')).order_by('-total_visits')
-    physicians = Physician.objects.all()
+    year_count = Agent.objects.filter(PatientVisit__visit_date__range=[LAST_12_MONTH,LAST_MONTH]).annotate(
+        total_visits=Sum('PatientVisit__visit_count')).order_by('-total_visits')
+    month_count = Agent.objects.filter(PatientVisit__visit_date__month=today_date.month-1,
+        PatientVisit__visit_date__year=today_date.year).annotate(
+        total_visits=Sum('PatientVisit__visit_count')).order_by('-total_visits')
+    agents = Agent.objects.all()
 
-    if physicians:
-        for physician in physicians:
+    if agents:
+        for agent in agents:
             email = EmailReport.objects.get_or_create(month=today_date.month-1, year=today_date.year)
 
-            month_ = month_count.filter(physician_name=physician.physician_name)
-            year_ = year_count.filter(physician_name=physician.physician_name)
+            month_ = month_count.filter(agent_name=agent.agent_name)
+            year_ = year_count.filter(agent_name=agent.agent_name)
             try:
-                thank = ThankyouMails.objects.get(physician=physician, emailreport=email)
+                thank = ThankyouMails.objects.get(agent=agent, emailreport=email)
             except ThankyouMails.DoesNotExist:
                 thank = ThankyouMails()
-                thank.physician=physician
+                thank.agent=agent
             if month_:
                 thank.month_referrals = month_[0].total_visits
             if year_:
@@ -52,21 +52,21 @@ def send_mail_cron():
     python manage.py celeryd -B -l info
     """
     print ('send mail-cron')
-    physicians = Physician.objects.all()
+    agents = Agent.objects.all()
     today_date = date.today()
     last_month = date(today_date.year, today_date.month-1, today_date.day)
 
-    for physician in physicians:
-        get_phy = ThankyouMails.objects.filter(physician=physician, emailreport__month=last_month.month,
+    for agent in agents:
+        get_phy = ThankyouMails.objects.filter(agent=agent, emailreport__month=last_month.month,
             emailreport__year=today_date.year, emailreport__is_sent=False)
         if get_phy:
             subject = "Patient refferal status"
-            email = physician.physician_email
+            email = agent.agent_email
 
             ctx = {
               'month_count':get_phy[0].month_referrals,
               'year_count':get_phy[0].year_referrals,
-              'name':get_phy[0].physician.physician_name,
+              'name':get_phy[0].agent.agent_name,
               'last_month':last_month.strftime('%B'),
               'last_year':today_date.year-1,
             }

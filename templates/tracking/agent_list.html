@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if physicians %}
+{% if agents %}
     <table class="table">
         <tr>
             <th>Name</th>
@@ -10,15 +10,15 @@
             <th>Email</th>
             <th>Special</th>
         </tr>
-        {% for physician in physicians %}
+        {% for agent in agents %}
             <tr>
-                <td><a href="/edit/physician/{{ physician.id }}/">
-                    {{ physician.physician_name }}
+                <td><a href="/edit/agent/{{ agent.id }}/">
+                    {{ agent.agent_name }}
                 </a></td>
-                <td>{{ physician.organization.org_name }}</td>
-                <td>{{ physician.physician_phone }}</td>
-                <td>{{ physician.physician_email }}</td>
-                <td>{{ physician.referral_special }}</td>
+                <td>{{ agent.organization.org_name }}</td>
+                <td>{{ agent.agent_phone }}</td>
+                <td>{{ agent.agent_email }}</td>
+                <td>{{ agent.agent_special }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -50,6 +50,6 @@
         </nav>
     {% endif %}
 {% else %}
-    <p>No physicians found.</p>
+    <p>No agents found.</p>
 {% endif %}
 {% endblock content %}

@@ -5,9 +5,9 @@
 
 <div class="form col-sm-offset-2 col-sm-8">
 
-    <center><h4><strong>Referral History</strong></h4></center>
+    <center><h4><strong>Patient Visit History</strong></h4></center>
       <hr><br>
-      <form id="form-referral" method="POST" class="form-horizontal" action=".">
+      <form id="form-patient-visit" method="POST" class="form-horizontal" action=".">
       {% csrf_token %}
 
       {% for field in form.visible_fields %}
@@ -39,7 +39,7 @@
 
       <div class="form-group">
           <div class="col-sm-offset-2 col-sm-6">
-            <button type="submit" class="btn btn-primary btn-md">submit</button>
+            <button type="submit" class="btn btn-primary btn-md">Submit</button>
           </div>
       </div>
 
@@ -50,17 +50,17 @@
             <tr>
                 <th>Timestamp</th>
                 <th>Date</th>
-                <th>Physician</th>
+                <th>Agent</th>
                 <th>Organization</th>
                 <th>Count</th>
             </tr>
-            {% for referral in referrals %}
+            {% for patient_visit in patient_visits %}
                 <tr>
-                    <td>{{ referral.referral_date }}</td>
-                    <td>{{ referral.visit_date }}</td>
-                    <td>{{ referral.physician.physician_name }}</td>
-                    <td>{{ referral.physician.organization.org_name }}</td>
-                    <td>{{ referral.visit_count }}</td>
+                    <td>{{ patient_visit.referral_date }}</td>
+                    <td>{{ patient_visit.visit_date }}</td>
+                    <td>{{ patient_visit.agent.agent_name }}</td>
+                    <td>{{ patient_visit.agent.organization.org_name }}</td>
+                    <td>{{ patient_visit.visit_count }}</td>
                 </tr>
             {% endfor %}
         </table>
@@ -83,7 +83,7 @@
       viewMode: 'days'
     });
       $("input[type='text']").addClass('form-control')
-      $("#id_physician-wrapper input").css("width", "464px");
+      $("#id_agent-wrapper input").css("width", "464px");
     });
         </script>
 {% endblock %}

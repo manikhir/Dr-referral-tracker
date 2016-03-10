@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 from .models import *
 
 admin.site.register(Organization)
-admin.site.register(Physician)
-admin.site.register(Referral)
+admin.site.register(Agent)
+admin.site.register(PatientVisit)
 admin.site.register(ThankyouMails)
 admin.site.register(EmailReport)
 

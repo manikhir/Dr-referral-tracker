@@ -12,23 +12,22 @@
 				<span class="icon-bar"></span>
 			</button>
 			<a class="navbar-brand" href="/home">
-				Practice Referral
+				Practice Patient Visit
 			</a>
 
 			<ul class="nav navbar-nav navbar-left">
 				{% if user.is_authenticated %}
 				    <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-					<li><a href="{% url 'get-referral-view' %}" ><span class="glyphicon glyphicon-star"></span> Referral report</a></li>
-					<li><a href="{% url 'referral-history' %}">Referral History</a></li>
+					<li><a href="{% url 'get-patient-visit-view' %}" ><span class="glyphicon glyphicon-star"></span> Patient Visit report</a></li>
+					<li><a href="{% url 'patient-visit-history' %}">Patient Visit History</a></li>
 					<li class="dropdown ">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                         <span class="glyphicon glyphicon-user"></span> Add Options<b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="{% url 'add-physician' %}">Physician</a></li>
+                            <li><a href="{% url 'add-agent' %}">Agent</a></li>
                             <li><a href="{% url 'add-organization' %}">Organization</a></li>
-                            <li><a href="{% url 'add-referral' %}">Referral</a></li>
-                            <li><a href="{% url 'referral-history' %}">Referral History</a></li>
+                            <li><a href="{% url 'add-patient-visit' %}">Patient Visit</a></li>
                         </ul>
                     </li>
                     <li class="dropdown ">
@@ -36,7 +35,7 @@
                         <span class="glyphicon glyphicon-user"></span> Edit Options<b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="{% url 'view-physicians' %}">Physicians</a></li>
+                            <li><a href="{% url 'view-agents' %}">Agents</a></li>
                             <li><a href="{% url 'view-organizations' %}">Organizations</a></li>
                         </ul>
                     </li>

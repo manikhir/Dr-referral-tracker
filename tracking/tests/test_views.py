@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from tracking.models import Organization, Physician, Referral
+from tracking.models import Organization, Agent, PatientVisit
 
 
 def date2str(d):
@@ -47,10 +47,10 @@ class IndexViewTest(LoginBaseTest):
         self.assertTemplateUsed(response, 'index.html')
         today = datetime.today().date()
         context = response.context
-        self.assertEqual(len(context["physician_visit_sum"]), 0)
+        self.assertEqual(len(context["agent_visit_sum"]), 0)
         self.assertEqual(len(context["org_visit_sum"]), 0)
         self.assertEqual(len(context["special_visit_sum"]), 0)
-        self.assertEqual(len(context["referrals"]), 0)
+        self.assertEqual(len(context["patient_visits"]), 0)
         self.assertEqual(len(context["all_orgs"]), 0)
         self.assertEqual(context['today'], today)
         self.assertEqual(context['week_ago'], today - timedelta(days=7))
@@ -63,25 +63,25 @@ class IndexViewTest(LoginBaseTest):
         data = {
             'phyform': 'submit',
             'organization': org.id,
-            'physician_name': 'phys1',
-            'physician_phone': '+442083661177',
-            'physician_email': 'test@email.com',
-            'referral_special': 'on'
+            'agent_name': 'phys1',
+            'agent_phone': '+442083661177',
+            'agent_email': 'test@email.com',
+            'agent_special': 'on'
         }
         response = self.client.post(reverse('index'), data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('index'))
-        physicians = Physician.objects.all()
-        self.assertEqual(len(physicians), 1)
-        created_physician = physicians[0]
-        self.assertEqual(created_physician.organization, org)
-        self.assertEqual(created_physician.physician_name,
-                         data['physician_name'])
-        self.assertEqual(created_physician.physician_phone,
-                         data['physician_phone'])
-        self.assertEqual(created_physician.physician_email,
-                         data['physician_email'])
-        self.assertEqual(created_physician.referral_special, True)
+        agents = Agent.objects.all()
+        self.assertEqual(len(agents), 1)
+        created_agent = agents[0]
+        self.assertEqual(created_agent.organization, org)
+        self.assertEqual(created_agent.agent_name,
+                         data['agent_name'])
+        self.assertEqual(created_agent.agent_phone,
+                         data['agent_phone'])
+        self.assertEqual(created_agent.agent_email,
+                         data['agent_email'])
+        self.assertEqual(created_agent.agent_special, True)
 
     def test_post_orgform(self):
         ''' quantifiedcode: ignore it! '''
@@ -124,77 +124,77 @@ class LogoutViewTest(LoginBaseTest):
         self.assertIsNone(self.client.session.get('_auth_user_id'))
 
 
-class ReferralViewTest(LoginBaseTest):
-    ''' testcases class for ReferralView '''
+class PatientVisitViewTest(LoginBaseTest):
+    ''' testcases class for PatientVisitView '''
 
     def test_add_get_form(self):
         ''' quantifiedcode: ignore it! '''
 
         self._login()
-        response = self.client.get(reverse('add-referral'))
+        response = self.client.get(reverse('add-patient-visit'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'tracking/referral.html')
+        self.assertTemplateUsed(response, 'tracking/patient_visit.html')
 
     def test_add_post_form(self):
         ''' quantifiedcode: ignore it! '''
 
         self._login()
         organization = Organization.objects.create(org_name='org1')
-        physician = Physician.objects.create(
-            physician_name='phys1', organization=organization)
+        agent = Agent.objects.create(
+            agent_name='phys1', organization=organization)
         today = timezone.now()
         data = {
-            'physician': physician.id,
+            'agent': agent.id,
             'visit_date': str(today.date()),
             'visit_count': 1,
-            'referral_date': str(today)
+            'patient_visit_date': str(today)
         }
-        response = self.client.post(reverse('add-referral'), data)
+        response = self.client.post(reverse('add-patient-visit'), data)
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('add-referral'))
-        referrals = Referral.objects.all()
-        self.assertEqual(len(referrals), 1)
-        created_ref = referrals[0]
-        self.assertEqual(created_ref.physician, physician)
+        self.assertRedirects(response, reverse('add-patient-visit'))
+        patient_visits = PatientVisit.objects.all()
+        self.assertEqual(len(patient_visits), 1)
+        created_ref = patient_visits[0]
+        self.assertEqual(created_ref.agent, agent)
         self.assertEqual(created_ref.visit_count, data['visit_count'])
         self.assertEqual(created_ref.visit_date, today.date())
-        self.assertEqual(date2str(created_ref.referral_date),
+        self.assertEqual(date2str(created_ref.patient_visit_date),
                          date2str(today))
 
 
-class GetReferralReportViewTest(LoginBaseTest):
-    ''' testcases class for GetReferralReportView '''
+class GetPatientVisitReportViewTest(LoginBaseTest):
+    ''' testcases class for GetPatientVisitReportView '''
 
     def test_get(self):
         ''' quantifiedcode: ignore it! '''
 
         self._login()
-        response = self.client.get(reverse('get-referral-view'))
+        response = self.client.get(reverse('get-patient-visit-view'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'tracking/show_referral_report.html')
+        self.assertTemplateUsed(response, 'tracking/show_patient_visit_report.html')
 
 
-class GetReferralHistoryViewTest(LoginBaseTest):
-    ''' testcases class for GetReferralHistoryView '''
+class GetPatientVisitHistoryViewTest(LoginBaseTest):
+    ''' testcases class for GetPatientVisitHistoryView '''
 
     def test_get(self):
         ''' quantifiedcode: ignore it! '''
 
         self._login()
-        response = self.client.get(reverse('referral-history'))
+        response = self.client.get(reverse('patient-visit-history'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,
-                                'tracking/show_referral_history.html')
+                                'tracking/show_patient_visit_history.html')
 
     def test_post(self):
         ''' quantifiedcode: ignore it! '''
 
         organization = Organization.objects.create(org_name='org1')
-        physician = Physician.objects.create(
-            physician_name='phys1', organization=organization)
+        agent = Agent.objects.create(
+            agent_name='phys1', organization=organization)
         today = datetime.now().date()
-        referrals = [
-            Referral.objects.create(physician=physician,
+        patient_visits = [
+            PatientVisit.objects.create(agent=agent,
                                     visit_date=today + timedelta(days=i))
             for i in range(10)]
 
@@ -203,48 +203,48 @@ class GetReferralHistoryViewTest(LoginBaseTest):
             'from_date': str(today),
             'to_date': str(today)
         }
-        response = self.client.post(reverse('referral-history'), data)
+        response = self.client.post(reverse('patient-visit-history'), data)
         context = response.context
-        self.assertEqual(len(context['referrals']), 1)
-        self.assertEqual(context['referrals'][0], referrals[0])
+        self.assertEqual(len(context['patient_visits']), 1)
+        self.assertEqual(context['patient_visits'][0], patient_visits[0])
 
         data = {
             'from_date': str(today),
-            'to_date': str(today+timedelta(days=len(referrals)))
+            'to_date': str(today+timedelta(days=len(patient_visits)))
         }
-        response = self.client.post(reverse('referral-history'), data)
+        response = self.client.post(reverse('patient-visit-history'), data)
         context = response.context
-        self.assertEqual(len(context['referrals']), len(referrals))
-        self.assertSetEqual({r.id for r in context['referrals']},
-                            {r.id for r in referrals})
+        self.assertEqual(len(context['patient_visits']), len(patient_visits))
+        self.assertSetEqual({r.id for r in context['patient_visits']},
+                            {r.id for r in patient_visits})
 
 
-class EditPhysicianViewTest(LoginBaseTest):
-    ''' testcases class for EditPhysicianView '''
+class EditAgentViewTest(LoginBaseTest):
+    ''' testcases class for EditAgentView '''
 
     def test_edit(self):
         ''' quantifiedcode: ignore it! '''
 
         organization = Organization.objects.create(org_name='org1')
-        physician = Physician.objects.create(
-            physician_name='phys1', organization=organization,
-            physician_email='test@email.com', physician_phone='+442083660000',
-            referral_special=False)
+        agent = Agent.objects.create(
+            agent_name='phys1', organization=organization,
+            agent_email='test@email.com', agent_phone='+442083660000',
+            agent_special=False)
         data = {
             'organization': organization.id,
-            'physician_name': 'new_name',
-            'physician_phone': '+442083661177',
-            'physician_email': 'new_email@email.com',
-            'referral_special': 'on'
+            'agent_name': 'new_name',
+            'agent_phone': '+442083661177',
+            'agent_email': 'new_email@email.com',
+            'agent_special': 'on'
         }
         response = self.client.post(
-            reverse('edit-physician', args=(physician.id,)), data)
+            reverse('edit-agent', args=(agent.id,)), data)
         self.assertEqual(response.status_code, 200)
-        physician = Physician.objects.get(id=physician.id)
-        self.assertEqual(physician.physician_name, data['physician_name'])
-        self.assertEqual(physician.physician_phone, data['physician_phone'])
-        self.assertEqual(physician.physician_email, data['physician_email'])
-        self.assertEqual(physician.referral_special, True)
+        agent = Agent.objects.get(id=agent.id)
+        self.assertEqual(agent.agent_name, data['agent_name'])
+        self.assertEqual(agent.agent_phone, data['agent_phone'])
+        self.assertEqual(agent.agent_email, data['agent_email'])
+        self.assertEqual(agent.agent_special, True)
 
 
 class EditOrganizationViewTest(LoginBaseTest):

@@ -16,7 +16,7 @@ LAST_12_MONTH = LAST_MONTH - timedelta(days=364)
 
 class Organization(models.Model):
     '''
-    A Physician works for a Organization, (clinic, hospital, private practice...)
+    An Agent works for an Organization, (clinic, hospital, private practice...)
     Need a few "special Organizations"
         - Marketing
         - Patient
@@ -39,45 +39,46 @@ class Organization(models.Model):
     def __str__(self):
         return self.org_name
 
-    def get_physician(self):
-        physicians_sort = self.Physician.filter().extra(
+    def get_agent(self):
+        physicians_sort = self.Agent.filter().extra(
             select={'lower_physician_name': 'lower(physician_name)'}
             ).order_by('lower_physician_name')
         return physicians_sort
 
 
-class Physician(models.Model):
+class Agent(models.Model):
     """
-    A Physician works for a Organization; clinic, hospital, private practice...
+    An Agent works for an Organization; clinic, hospital, private practice...
     Other referral types for example; Other patient, google adds, website.....
-    If referral_special==True then only require physician_name but call it "Referral source"
+    If agent_special==True then only require agent_name but call it "Referral source"
     """
     organization = models.ForeignKey(
-        Organization, related_name="Physician",verbose_name="Group")
-    physician_name = models.CharField(
+        Organization, related_name="Agent",verbose_name="Group")
+    agent_name = models.CharField(
         "Practitioner Name", max_length=254, unique=True, blank=False, null=True)
-    physician_phone = PhoneNumberField("Phone", blank=True)
-    physician_email = models.EmailField(
+    agent_phone = PhoneNumberField("Phone", blank=True)
+    agent_email = models.EmailField(
         "Email address", max_length=254, blank=True)
-    referral_special = models.BooleanField("Special type", default=False)
+    agent_special = models.BooleanField("Special type", default=False)
 
     def __str__(self):
-        return self.physician_name
+        return self.agent_name
 
-    def get_referral(self, params):
+    def get_patient_visits(self, params):
         today = params['to_date']
         week_ago = params['from_date']
         referral_sort = self.Referral.filter(visit_date__range=(str(week_ago), str(today))).values('visit_date').annotate(visit=Sum('visit_count')).order_by('-visit_date')
         return referral_sort
 
 
-class Referral(models.Model):
+class PatientVisit(models.Model):
     """
-    Referral is a patient visit referred to the clinic from a "Physician" that is part of an "Organization"
+    Patient Visit, or Referral, is a patient visit referred to the clinic from 
+    an "Agent" that is part of an "Organization".
     Not sure how to do the multiple ForeignKey or if that is right.
     """
-    physician = models.ForeignKey(
-        Physician, related_name="Referral",verbose_name="Practitioner")
+    agent = models.ForeignKey(
+        Agent, related_name="Referral")
     visit_date = models.DateField("Date", default=date.today)
     visit_count = models.IntegerField("Referrals", default=1)
     referral_date = models.DateTimeField("Referral Date", default=timezone.now)
@@ -96,10 +97,10 @@ class EmailReport(models.Model):
 
 class ThankyouMails(models.Model):
     """
-    Mail will be send to Physician at end-of-the-day
+    Mail will be send to Agent at end-of-the-day
     having month and year referrals count
     """
-    physician = models.ForeignKey(Physician, related_name="thankyou_mail")
+    agent = models.ForeignKey(Agent, related_name="thankyou_mail")
     emailreport = models.ForeignKey(EmailReport, related_name="email_report", default=1)
     month_referrals = models.IntegerField("Month-Referrals")
     year_referrals = models.IntegerField("Year-Referrals")

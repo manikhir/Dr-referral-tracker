@@ -55,23 +55,23 @@
 			  	</td>
 		</tr>
 
-	{% for physician in org.get_physician %}
+	{% for agent in org.get_agent %}
 
 	<tr class="">
-			  <td class="active text-right"> {{physician}}
+			  <td class="active text-right"> {{agent}}
 			  </td>
 			  <td class="current_month_date" >
-			  	{% get_physician_counts physician as counts %}{{counts}}
+			  	{% get_agent_counts agent as counts %}{{counts}}
 			  </td>
 			  <td class="last_month_date">
-			  	{% get_physician_counts_month_lastyear physician as counts %}{{counts}}
+			  	{% get_agent_counts_month_lastyear agent as counts %}{{counts}}
 			  </td>
 			  <td class="current_year">
-				{% get_physician_counts_year physician as counts %}
+				{% get_agent_counts_year agent as counts %}
 			  {{counts}}
 			  </td>
 			  <td class="last_year">
-			  	{% get_physician_counts_year_lastyear physician as counts %}{{counts}}
+			  	{% get_agent_counts_year_lastyear agent as counts %}{{counts}}
 			  </td>
 		</tr>
 	{% endfor %}

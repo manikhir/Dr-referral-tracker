@@ -7,7 +7,7 @@ class OrganizationForm(forms.ModelForm):
     """
     Create a new organization,
     Check for duplicates
-    Offer new NewPhysician creation in same form.
+    Offer new NewAgent creation in same form.
     """
 
     class Meta:
@@ -15,40 +15,40 @@ class OrganizationForm(forms.ModelForm):
         exclude = []
 
 
-class PhysicianForm(autocomplete_light.ModelForm):
+class AgentForm(autocomplete_light.ModelForm):
     """
-    Create a new Physician
+    Create a new Agent
     autocomplete Organization https://github.com/yourlabs/django-autocomplete-light/tree/stable/2.x.x
     Check for duplicates
-    Offer new NewPhysician creation
+    Offer new NewAgent creation
     """
 
     class Meta:
-        model = Physician
+        model = Agent
         exclude = []
 
 
-class ReferralForm(autocomplete_light.ModelForm):
+class PatientVisitForm(autocomplete_light.ModelForm):
     """
-    record a new referral
-    autocomplete Physician
+    record a new patient visit
+    autocomplete Agent
     Don't need blank for Org
     Assume today's date
     """
 
     class Meta:
-        model = Referral
-        exclude = ['referral_date']
+        model = PatientVisit
+        exclude = ['patient_visit_date']
 
 
-class ReferralHistoryForm(forms.Form):
+class PatientVisitHistoryForm(forms.Form):
     """
-    record a new referral
-    autocomplete Physician
+    record a new patient_visit
+    autocomplete Agent
     Don't need blank for Org
     Assume today's date
     """
 
-    physician = autocomplete_light.ModelMultipleChoiceField('PhysicianAutocomplete', required=False)
+    agent = autocomplete_light.ModelMultipleChoiceField('AgentAutocomplete', required=False)
     from_date = forms.DateField(widget=forms.TextInput(attrs={'readonly' : 'readonly'}))
     to_date = forms.DateField(widget=forms.TextInput(attrs={'readonly' : 'readonly'}))
