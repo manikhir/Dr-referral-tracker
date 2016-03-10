@@ -41,7 +41,7 @@ class Organization(models.Model):
 
     def get_agent(self):
         physicians_sort = self.Agent.filter().extra(
-            select={'lower_physician_name': 'lower(physician_name)'}
+            select={'lower_physician_name': 'lower(agent_name)'}
             ).order_by('lower_physician_name')
         return physicians_sort
 
@@ -55,7 +55,7 @@ class Agent(models.Model):
     organization = models.ForeignKey(
         Organization, related_name="Agent",verbose_name="Group")
     agent_name = models.CharField(
-        "Practitioner Name", max_length=254, unique=True, blank=False, null=True)
+        "Agent Name", max_length=254, unique=True, blank=False, null=True)
     agent_phone = PhoneNumberField("Phone", blank=True)
     agent_email = models.EmailField(
         "Email address", max_length=254, blank=True)
@@ -69,7 +69,16 @@ class Agent(models.Model):
         week_ago = params['from_date']
         referral_sort = self.Referral.filter(visit_date__range=(str(week_ago), str(today))).values('visit_date').annotate(visit=Sum('visit_count')).order_by('-visit_date')
         return referral_sort
-
+        
+class Doctor(models.Model):
+    """
+    Doctor receives a Patient Visit and a referral for doing so.
+    """
+    doctor_name = models.CharField(
+        "Doctor Name", max_length=254, unique=True, blank=False, null=True)
+    
+    def __str__(self):
+        return self.doctor_name
 
 class PatientVisit(models.Model):
     """
@@ -79,12 +88,15 @@ class PatientVisit(models.Model):
     """
     agent = models.ForeignKey(
         Agent, related_name="Referral")
+    doctor = models.ForeignKey(Doctor, related_name="Referral", null=True)
     visit_date = models.DateField("Date", default=date.today)
     visit_count = models.IntegerField("Referrals", default=1)
     referral_date = models.DateTimeField("Referral Date", default=timezone.now)
 
     def __str__(self):
         return self.physician.organization.org_name
+
+    
 
 class EmailReport(models.Model):
     """EmailReport for each physician"""

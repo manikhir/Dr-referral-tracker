@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+<h3>Edit Doctor</h3>
+<div class="col-md-6">
+    <form method="POST" novalidate>
+        {% if success %}
+            <div class="alert alert-success" role="alert">
+                Changes saved succesfully
+            </div>
+        {% endif %}
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons submit='Save Changes' %}{% endbuttons %}
+    </form>
+</iv>
+{% endblock content %}

@@ -166,6 +166,24 @@ class AgentView(View):
 
         ctx = {"form": form}
         return render(request,"tracking/agent.html",ctx )
+        
+class DoctorView(View):
+    # display the doctor form
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        form = DoctorForm()
+        ctx = {"form": form}
+        return render(request,"tracking/doctor.html",ctx )
+
+
+    def post(self, request, *args, **kwargs):
+        form = DoctorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = DoctorForm()
+
+        ctx = {"form": form}
+        return render(request,"tracking/doctor.html",ctx )        
 
 
 class PatientVisitView(View):
@@ -265,21 +283,6 @@ class GetPatientVisitHistory(View):
         }
         return render(request,"tracking/show_patient_visit_history.html",ctx )
 
-def edit_agent(request, agent_id):
-    agent = get_object_or_404(Agent, id=agent_id)
-    if request.method == 'POST':
-        form = AgentForm(request.POST, instance=agent)
-        if form.is_valid():
-            form.save()
-            return render(request, 'tracking/agent_edit.html', {
-                'form': form,
-                'success': True})
-
-    else:
-        form = AgentForm(instance=agent)
-
-    return render(request, 'tracking/agent_edit.html', {'form': form})
-
 def edit_organization(request, organization_id):
     organization = get_object_or_404(Organization, id=organization_id)
     if request.method == 'POST':
@@ -294,6 +297,36 @@ def edit_organization(request, organization_id):
         form = OrganizationForm(instance=organization)
 
     return render(request, 'tracking/organization_edit.html', {'form': form})
+    
+def edit_agent(request, agent_id):
+    agent = get_object_or_404(Agent, id=agent_id)
+    if request.method == 'POST':
+        form = AgentForm(request.POST, instance=agent)
+        if form.is_valid():
+            form.save()
+            return render(request, 'tracking/agent_edit.html', {
+                'form': form,
+                'success': True})
+
+    else:
+        form = AgentForm(instance=agent)
+
+    return render(request, 'tracking/agent_edit.html', {'form': form})    
+    
+def edit_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    if request.method == 'POST':
+        form = DoctorForm(request.POST, instance=doctor)
+        if form.is_valid():
+            form.save()
+            return render(request, 'tracking/doctor_edit.html', {
+                'form': form,
+                'success': True})
+
+    else:
+        form = DoctorForm(instance=doctor)
+
+    return render(request, 'tracking/doctor_edit.html', {'form': form})    
 
 class OrganizationListView(ListView):
     model = Organization
@@ -306,3 +339,9 @@ class AgentListView(ListView):
     template_name = 'tracking/agent_list.html'
     context_object_name = "agents"
     paginate_by = 10
+    
+class DoctorListView(ListView):
+    model = Doctor
+    template_name = 'tracking/doctor_list.html'
+    context_object_name = "doctors"
+    paginate_by = 10    

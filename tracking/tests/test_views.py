@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from tracking.models import Organization, Agent, PatientVisit
+from tracking.models import Organization, Agent, PatientVisit, Doctor
 
 
 def date2str(d):
@@ -162,6 +162,33 @@ class PatientVisitViewTest(LoginBaseTest):
                          date2str(today))
 
 
+class DoctorViewTest(LoginBaseTest):
+    ''' testcases class for DoctorView '''
+
+    def test_add_get_form(self):
+        ''' quantifiedcode: ignore it! '''
+
+        self._login()
+        response = self.client.get(reverse('add-doctor'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tracking/doctor.html')
+
+    def test_add_post_form(self):
+        ''' quantifiedcode: ignore it! '''
+
+        self._login()
+        data = {
+            'doctor_name': "doctor1"
+        }
+        response = self.client.post(reverse('add-doctor'), data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('add-doctor'))
+        doctors = Doctor.objects.all()
+        self.assertEqual(len(doctors), 1)
+        created_ref = doctors[0]
+        self.assertEqual(created_ref.doctor_name, data['doctor_name'])
+        
+
 class GetPatientVisitReportViewTest(LoginBaseTest):
     ''' testcases class for GetPatientVisitReportView '''
 
@@ -274,3 +301,19 @@ class EditOrganizationViewTest(LoginBaseTest):
         self.assertEqual(organization.org_phone, data['org_phone'])
         self.assertEqual(organization.org_email, data['org_email'])
         self.assertEqual(organization.org_special, True)
+        
+class EditDoctorViewTest(LoginBaseTest):
+    ''' testcases class for EditDoctorView '''
+
+    def test_edit(self):
+        ''' quantifiedcode: ignore it! '''
+
+        doctor = Doctor.objects.create(doctor_name='doctor1')
+        data = {
+            'doctor_name': 'doctor2'
+        }
+        response = self.client.post(
+            reverse('edit-doctor', args=(doctor.id,)), data)
+        self.assertEqual(response.status_code, 200)
+        doctor = Doctor.objects.get(id=doctor.id)
+        self.assertEqual(doctor.doctor_name, data['doctor_name'])

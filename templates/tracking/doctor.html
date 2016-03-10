@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+<div class="form col-sm-offset-2 col-sm-8">
+
+    <center><h2><strong>Create Doctor</strong></h2></center>
+    <div class="col-md-6">
+      <form id="form-patient_visit" method="POST" class="form-horizontal" action=".">
+        {% if success %}
+            <div class="alert alert-success" role="alert">
+                Changes saved succesfully
+            </div>
+        {% endif %}
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons submit='Save Changes' %}{% endbuttons %}
+      </form>
+    </div>
+    <hr>
+</div>
+
+
+{% endblock content %}
+
+ {% block javascript %}
+
+ <script type="text/javascript">
+    $( document ).ready(function() {
+
+    $('.datetimepicker').datetimepicker({
+      showTodayButton: true,
+      format: 'YYYY-MM-DD',
+      timeZone: '{{timezone}}',
+      ignoreReadonly: true,
+      viewMode: 'days'
+    });
+
+    $("input[type='text']").addClass('form-control')
+    $("input[type='number']").addClass('form-control')
+    $("#id_agent-wrapper input").css("width", "464px");
+});
+        </script>
+  {% endblock %}
+

@@ -52,6 +52,7 @@
                 <th>Date</th>
                 <th>Agent</th>
                 <th>Organization</th>
+                <th>Doctor</th>
                 <th>Count</th>
             </tr>
             {% for patient_visit in patient_visits %}
@@ -60,6 +61,7 @@
                     <td>{{ patient_visit.visit_date }}</td>
                     <td>{{ patient_visit.agent.agent_name }}</td>
                     <td>{{ patient_visit.agent.organization.org_name }}</td>
+                    <td>{{ patient_visit.doctor.doctor_name }}</td>
                     <td>{{ patient_visit.visit_count }}</td>
                 </tr>
             {% endfor %}

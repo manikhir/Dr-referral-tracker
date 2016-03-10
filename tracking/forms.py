@@ -26,6 +26,18 @@ class AgentForm(autocomplete_light.ModelForm):
     class Meta:
         model = Agent
         exclude = []
+        
+class DoctorForm(autocomplete_light.ModelForm):
+    """
+    Create a new Doctor
+    autocomplete Organization https://github.com/yourlabs/django-autocomplete-light/tree/stable/2.x.x
+    Check for duplicates
+    Offer new NewDoctor creation
+    """
+
+    class Meta:
+        model = Doctor
+        exclude = []     
 
 
 class PatientVisitForm(autocomplete_light.ModelForm):
@@ -39,6 +51,11 @@ class PatientVisitForm(autocomplete_light.ModelForm):
     class Meta:
         model = PatientVisit
         exclude = ['patient_visit_date']
+        
+        
+    def __init__(self, *args, **kwargs):
+        super(PatientVisitForm, self).__init__(*args, **kwargs)
+        self.fields['doctor'].required = True        
 
 
 class PatientVisitHistoryForm(forms.Form):

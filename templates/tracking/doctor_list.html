@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if doctors %}
+    <table class="table">
+        <tr>
+            <th>Name</th>
+        </tr>
+        {% for doctor in doctors %}
+            <tr>
+                <td><a href="/edit/doctor/{{ doctor.id }}/">
+                    {{ doctor.doctor_name }}
+                </a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}" 
+                               aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a></li>
+                {% endif %}
+                {% for page in page_obj.paginator.page_range %}
+                    {% if page == page_obj.number %}
+                        <li class="active"><a href="?page={{ page }}">
+                            {{ page }}
+                        </a></li>
+                    {% else %}
+                        <li><a href="?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}" 
+                               aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <p>No doctors found.</p>
+{% endif %}
+{% endblock content %}
