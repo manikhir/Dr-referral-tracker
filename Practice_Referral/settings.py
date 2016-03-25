@@ -144,3 +144,15 @@ DEFAULT_EMAIL_FROM = "update@heteroskedastic.com"
 # Additionally, you can specify an optional region, like so:
 # AWS_SES_REGION_NAME = 'us-east-1'
 # AWS_SES_REGION_ENDPOINT = 'email.us-east-1.amazonaws.com'
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'docker_demo',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
